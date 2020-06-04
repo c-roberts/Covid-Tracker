@@ -3,7 +3,6 @@ from collections import OrderedDict
 import pandas as pd
 import psycopg2
 import io
-import numpy as np
 
 url = 'https://query.wikidata.org/sparql'
 query = """
@@ -83,6 +82,7 @@ df2 = df2.astype({'area': float, 'population': float})
 df2.head()
 r.close()
 
+# change the database and user name for your datebase
 conn = psycopg2.connect(host="localhost", port = 5432, database="covid", user="daniellechamberlain", password="postgres")
 cur = conn.cursor()
 
@@ -109,4 +109,3 @@ cur.copy_from(output, 'Counties_Area_Pop', null="") # null values become ''
 conn.commit()
 cur.close()
 conn.close()
-

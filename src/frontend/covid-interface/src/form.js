@@ -1,14 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import Chart from './chart';
 
 class CovidForm extends React.Component {
     constructor(props) {
       super(props);
       this.state = {
-        levelDistancing: 'low',
+        levelDistancing: '',
         countyName: '',
-        stateName: 'Alabama',
-        message : ''
+        stateName: '',
+        isLoaded : false
       };
   
       this.handleChange = this.handleChange.bind(this);
@@ -26,33 +27,35 @@ class CovidForm extends React.Component {
       }
     
     handleSubmit(event) {
-        console.log('A name was submitted: ' + this.state.countyName);
         event.preventDefault();
-
-        fetch(`submit/${this.state.stateName}/${this.state.countyName}/${this.state.levelDistancing}`, {
-            method: "POST", // *GET, POST, PUT, DELETE, etc.
-            mode: "cors", // no-cors, cors, *same-origin
-            cache: "no-cache",
-            credentials: "same-origin",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            redirect: "follow", 
-            referrer: "no-referrer",
-            body: '', 
-        }).then(res => console.log(res)) // TODO: fix this
-        .then(
-          (result) => {
-            this.setState({
-              isLoaded: true,
-              items: result.items
-            });
-          })
+        if (this.state.countyName !== '' && this.state.countyName !== ''){
+          console.log('Submitted');
+          fetch(`submit/${this.state.stateName}/${this.state.countyName}`, {
+              method: "POST", // *GET, POST, PUT, DELETE, etc.
+              mode: "cors", // no-cors, cors, *same-origin
+              cache: "no-cache",
+              credentials: "same-origin",
+              headers: {
+                  "Content-Type": "text/plain",
+              },
+              redirect: "follow", 
+              referrer: "no-referrer",
+              body: '', 
+          }).then(
+            (result) => 
+              {
+                if (result.status === 200) { this.setState({isLoaded : true}) }
+                else { alert("Input not recognized") }
+              }
+            )
+          }
         }
       
   
     render() {
       return (
+        <div>
+        <div id='input-container'>
         <form onSubmit={this.handleSubmit}>
           <label>
             <b>County:&nbsp;</b>
@@ -66,6 +69,7 @@ class CovidForm extends React.Component {
           <label>
             <b>State:&nbsp;</b>
                 <select name="stateName" value={this.state.stateName} onChange={this.handleChange}>
+                    <option value=""></option>
                     <option value="AL">Alabama</option>
                     <option value="AK">Alaska</option>
                     <option value="AZ">Arizona</option>
@@ -118,22 +122,14 @@ class CovidForm extends React.Component {
                     <option value="WI">Wisconsin</option>
                     <option value="WY">Wyoming</option>
                 </select>
-
-
-          </label>
-          <br/>
-          <label>
-            <b>Level of Social Distancing:&nbsp;</b>
-            <select name="levelDistancing" value={this.state.levelDistancing} onChange={this.handleChange}>
-            <option value="low">Low</option>
-            <option value="moderate">Moderate</option>
-            <option value="high">High</option>
-            <option value="lockdown">Lockdown</option>
-          </select>
           </label>
           <br/>
           <input id='submit' type="submit" value="Submit" />
         </form>
+        </div>
+        <Chart display={this.state.isLoaded}/>
+        </div>
+        
       );
     }
   }

@@ -28,7 +28,7 @@
   color: #61dafb;
 }
 
-#container {
+#input-container {
   margin: auto;
   margin-top: 50px;
   margin-bottom: 50px;
@@ -36,6 +36,20 @@
   padding-right: 50px;
   padding-bottom: 50px;
   width: 420px;
+  padding-top: 50px;
+  background-color: rgba(19, 15, 15, 0.1);
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  border-radius: 25px;
+}
+
+#output-container {
+  margin: auto;
+  margin-top: 50px;
+  margin-bottom: 50px;
+  padding-left: 50px;
+  padding-right: 50px;
+  padding-bottom: 50px;
+  width: 720px;
   padding-top: 50px;
   background-color: rgba(19, 15, 15, 0.1);
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);

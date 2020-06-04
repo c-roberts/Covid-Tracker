@@ -10793,3 +10793,20 @@ yargs@^13.3.0:
     which-module "^2.0.0"
     y18n "^4.0.0"
     yargs-parser "^13.1.2"
+
+"zingchart-constants@github:zingchart/zingchart-constants#master":
+  version "1.0.2"
+  resolved "https://codeload.github.com/zingchart/zingchart-constants/tar.gz/2cb0b3a55bbae8ee6fb943161fdd5b71618bc95f"
+
+zingchart-react@^2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/zingchart-react/-/zingchart-react-2.2.0.tgz#623df6fb226532f2dd7a0d9ebbfd299ce4550e84"
+  integrity sha512-QnrJjfU1HuVaSPwyDYAiC+4ts14T9vMadle98KbKlsI4iY5G/bM2EIFFjt77MpXzWEK+SMuM4qm0qXMBRvELVg==
+  dependencies:
+    zingchart latest
+    zingchart-constants "github:zingchart/zingchart-constants#master"
+
+zingchart@latest:
+  version "2.9.0"
+  resolved "https://registry.yarnpkg.com/zingchart/-/zingchart-2.9.0.tgz#4bdaeb6f531188cee4e2e82919a31b6ffa5b2a40"
+  integrity sha512-9dvIJt+BbF7POe3FUY55YfefK3+I2J8g2eXOEM46gHJc3o/kzbXnrYoVp1QSMwNaCr7qL5oeRhoMobfiGbW2/A==

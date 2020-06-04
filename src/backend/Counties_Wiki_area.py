@@ -37,6 +37,10 @@ for item in data['results']['bindings']:
     if item['unitLabel']['value'] == 'square mile':
             item['area']['value'] = float(item['area']['value']) * 2.58998811
             item['unitLabel']['value'] = 'square kilometre'
+    if ' County' in item['countyLabel']['value']:
+        item['countyLabel']['value'] = item['countyLabel']['value'].replace(" County", "")
+    if ' Parish' in item['countyLabel']['value']:
+        item['countyLabel']['value'] = item['countyLabel']['value'].replace(" Parish", "")
     counties.append(OrderedDict({
         label : item[label]['value'] if label in item else None
         for label in ['county', 'stateLabel', 'countyLabel',
@@ -88,8 +92,8 @@ cur = conn.cursor()
 
 cur.execute("""
             CREATE TABLE Counties_Area_Pop (
-            state_Label VARCHAR(255) NOT Null,
-            county_Label VARCHAR(255),
+            state VARCHAR(255) NOT Null,
+            county VARCHAR(255),
             area_km2 float4,
             population float4)"""
             )

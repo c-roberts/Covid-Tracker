@@ -6,6 +6,11 @@ from sklearn.preprocessing import PolynomialFeatures
 from sklearn.preprocessing import scale
 from sklearn.linear_model import LinearRegression
 
+# set working directory to be current
+import os
+dir_path = os.path.dirname(os.path.realpath(__file__))
+os.chdir(dir_path)
+
 
 class CovidRegression:
     def __init__(self):
@@ -99,17 +104,21 @@ class CovidRegression:
         pol_reg = LinearRegression()
         pol_reg.fit(x_poly, y)
 
-        plot = plt.figure(plt_num)
-        plt.scatter(x, y, color='red')
-        plt.plot(x, pol_reg.predict(poly_reg.fit_transform(x)), color='blue')
+        #plot = plt.figure(plt_num)
+        #plt.scatter(x, y, color='red')
+        #plt.plot(x, pol_reg.predict(poly_reg.fit_transform(x)), color='blue')
 
         self.process_plot_values(plt_num, days, y)
 
-        plt.xlabel('Time (days)')
-        plt.ylabel('Number of Cases')
+        #plt.xlabel('Time (days)')
+        #plt.ylabel('Number of Cases')
 
-        print("\nThe spread of COVID-19 in your region will be similar to that of", lvl)
-        print("Regression function coefficients for figure", plt_num)
+        #try:
+        #    print("\nThe spread of COVID-19 in your region will be similar to that of", lvl.replace("-", ", "))
+        #except:
+        #    print("\nThe spread of COVID-19 in your region will be similar to that of", lvl)
+
+        #print("Regression function coefficients for figure", plt_num)
         return pol_reg.coef_
 
     def visualize(self):
@@ -118,24 +127,48 @@ class CovidRegression:
         med = self.mobility[int(self.k/2)-1][0]
         high = self.mobility[0][0]
 
-        print(self.create_plot(low, 1))
-        print(self.create_plot(med, 2))
-        print(self.create_plot(high, 3))
+        self.create_plot(low, 1)
+        self.create_plot(med, 2)
+        self.create_plot(high, 3)
 
-        plt.show()
+        #plt.show()
 
-        # print("fig 1:", low)
-        # print("fig 2:", med)
-        # print("fig 3:", high)
+    def get_values(self, level):
+        # counties representing each lvl of social distancing
+
+        if level == 'low':
+            low = model.mobility[-1][0]
+            lvl = "low"
+        elif level == 'moderate':
+            med = model.mobility[int(model.k/2)-1][0]
+            lvl = "medium"
+        elif level == 'high':
+            high = model.mobility[0][0]
+        else:
+            level = "high"
+            high = model.mobility[0][0]
+            lvl = "high"
 
 
+        days = np.array(self.cases[lvl]['days'])
+        x = days.reshape(-1, 1)
+        y = np.array(self.cases[lvl]['cases'])
+
+        poly_reg = PolynomialFeatures(degree=3)
+        x_poly = poly_reg.fit_transform(x)
+        pol_reg = LinearRegression()
+        pol_reg.fit(x_poly, y)
+
+        return pol_reg.predict(poly_reg.fit_transform(x))
+
+        
 population = 200000
 density = 500
 
 model = CovidRegression()
 model.process_cases_over_time()
 model.process_mobility_scores(population, density)
-print(model.mobility)
+#input(model.get_values("low"))
 model.visualize()
 
 x_low = model.values['low']['x']
@@ -144,3 +177,5 @@ x_medium = model.values['medium']['x']
 y_medium = model.values['medium']['y']
 x_high = model.values['high']['x']
 y_high = model.values['high']['y']
+
+

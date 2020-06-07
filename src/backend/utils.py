@@ -3,9 +3,26 @@ import numpy as np
 import pandas as pd
 from datetime import datetime
 
+#l = input("Default (\"d\") or other (\"o\") login: ")
+l = 'c'
+if l == "d":
+    db_name = "covid_data"
+    user_name = "Xu"
+    password = "postgres"
+
+elif l == "c":
+    db_name = "covid"
+    user_name = "postgres"
+    password = ""
+
+else:
+    db_name = input("Enter the name of the database: ")
+    user_name = input("Enter your username: ")
+    password = input("Enter your password: ")
+
 
 def query_data(query):
-    conn = psycopg2.connect(host="localhost", port = 5432, database="covid_data", user="Xu", password="postgres")
+    conn = psycopg2.connect(host="localhost", port = 5432, database=db_name, user=user_name, password=password)
     cur = conn.cursor()
 
     cur.execute(query)

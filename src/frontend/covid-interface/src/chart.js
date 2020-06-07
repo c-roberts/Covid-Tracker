@@ -9,6 +9,11 @@ class Chart extends React.Component {
         display: props.display,
         config: {
           type: 'line',
+          yScale: 12,
+          nearest : null,
+          'scale-x': {
+            format: "Day %v"
+          },
           series: [{
             values: [0,0,0,0,0,0,0,0]
           }]
@@ -53,9 +58,17 @@ class Chart extends React.Component {
 
 
     render() {
-        if (!this.state.display) { 
-            return (<div/>);
+        let n;
+        let pair;
+        let f_string;
+        if (this.state.config.nearest) { 
+          pair = this.state.config.nearest.split("-")
+          f_string = `${pair[1]}, ${pair[0]}`
+          n = <div>This county is most similar to <b>{f_string}</b></div>
         }
+        else { n = <div><br/></div>}
+        if (!this.state.display) { return (<div/>);}
+
         else { 
             return (
                 <div id='output-container'>
@@ -64,15 +77,13 @@ class Chart extends React.Component {
                         <b>Level of Social Distancing:&nbsp;</b>
                         <select name="levelDistancing" value={this.state.levelDistancing} onChange={this.handleChange}>
                         <option value=""></option>
-                        <option value="none">None</option>
                         <option value="low">Low</option>
-                        <option value="moderate">Moderate</option>
+                        <option value="medium">Moderate</option>
                         <option value="high">High</option>
-                        <option value="lockdown">Lockdown</option>
                     </select>
                     </label>
                   </form>
-                  <br/>
+                  {n}
                   <br/>
                   <ZingChart data={this.state.config}/>
                 </div>

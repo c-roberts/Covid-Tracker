@@ -5,7 +5,16 @@ import os
 import threading
 from numpy import random
 
-from pprint import pprint
+# start this server from the root '\Covid-Tracker' directory
+os.chdir(os.path.dirname(os.path.realpath(__file__)).replace("\src\middleend", ""))
+dir_path = os.getcwd() + '\\src\\frontend\\covid-interface\\build' # path to react build dir
+
+###
+#import sys
+#sys.path.append('.\\src\\backend\\')
+#import regression
+###
+
 
 app = Flask(__name__)
 key = "dd5ee110bc1dbb9e53eab3790d804f59014e006d"
@@ -17,11 +26,10 @@ userLevel = None
 userPopulation = -1
 userArea = -1
 
-#dir_path = os.path.dirname(os.path.realpath(__file__)) + '\src'
-dir_path = os.getcwd() + '\\src\\frontend\\covid-interface\\build' # path to react build dir
 
 
-## census utilities
+
+## census utilities ##
 def get_population(state, county):
     q = c.acs5.state_county(('NAME', 'B01003_001E'), state.fips, county.fips) # total population for county
     return int(q[0]['B01003_001E'])

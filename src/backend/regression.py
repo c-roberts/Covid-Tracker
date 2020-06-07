@@ -11,6 +11,7 @@ class CovidRegression:
     def __init__(self):
         self.query = "SELECT cases_date, county_state, county_name, cases FROM covid_county_cases"
         self.data = utils.query_data(self.query)
+        self.values = {'low': {}, 'medium': {}, 'high': {}}
         self.cases = None
         self.mobility = None
         self.k = 10
@@ -77,8 +78,20 @@ class CovidRegression:
 
         self.mobility = sorted(mobility_scores_nn, key=lambda x: x[1])
 
+    def process_plot_values(self, num, x, y):
+        sd_lvls = ['low', 'medium', 'high']
+
+        t = 'Number of Cases Over Time - {} Social Distancing'
+        t = t.format(sd_lvls[num - 1].capitalize())
+
+        self.values[sd_lvls[num - 1]]['x'] = x
+        self.values[sd_lvls[num - 1]]['y'] = y
+
+        plt.title(t)
+
     def create_plot(self, lvl, plt_num):
-        x = np.array(self.cases[lvl]['days']).reshape(-1, 1)
+        days = np.array(self.cases[lvl]['days'])
+        x = days.reshape(-1, 1)
         y = np.array(self.cases[lvl]['cases'])
 
         poly_reg = PolynomialFeatures(degree=3)
@@ -90,18 +103,12 @@ class CovidRegression:
         plt.scatter(x, y, color='red')
         plt.plot(x, pol_reg.predict(poly_reg.fit_transform(x)), color='blue')
 
-        t = 'Number of Cases Over Time - {} Social Distancing'
-        if plt_num == 1:
-            t = t.format("Low")
-        elif plt_num == 2:
-            t = t.format("Medium")
-        else:
-            t = t.format("High")
+        self.process_plot_values(plt_num, days, y)
 
-        plt.title(t)
         plt.xlabel('Time (days)')
         plt.ylabel('Number of Cases')
 
+        print("\nThe spread of COVID-19 in your region will be similar to that of", lvl)
         print("Regression function coefficients for figure", plt_num)
         return pol_reg.coef_
 
@@ -130,3 +137,10 @@ model.process_cases_over_time()
 model.process_mobility_scores(population, density)
 print(model.mobility)
 model.visualize()
+
+x_low = model.values['low']['x']
+y_low = model.values['low']['y']
+x_medium = model.values['medium']['x']
+y_medium = model.values['medium']['y']
+x_high = model.values['high']['x']
+y_high = model.values['high']['y']

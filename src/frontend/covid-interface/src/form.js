@@ -9,6 +9,7 @@ class CovidForm extends React.Component {
         levelDistancing: '',
         countyName: '',
         stateName: '',
+        area: '',
         isLoaded : false
       };
   
@@ -44,7 +45,7 @@ class CovidForm extends React.Component {
           }).then(
             (result) => 
               {
-                if (result.status === 200) { this.setState({isLoaded : true}) }
+                if (result.status === 200) { this.setState({isLoaded : true, area: this.state.countyName}) }
                 else { alert("Input not recognized") }
               }
             )
@@ -127,7 +128,7 @@ class CovidForm extends React.Component {
           <input id='submit' type="submit" value="Submit" />
         </form>
         </div>
-        <Chart display={this.state.isLoaded}/>
+        <Chart display={this.state.isLoaded} area={this.state.area}/>
         </div>
         
       );

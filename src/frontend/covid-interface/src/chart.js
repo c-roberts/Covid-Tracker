@@ -6,17 +6,13 @@ class Chart extends React.Component {
       super(props);
       this.state = {
         levelDistancing: '',
+        area: props.area,
         display: props.display,
         config: {
           type: 'line',
-          yScale: 12,
-          nearest : null,
-          'scale-x': {
-            format: "Day %v"
-          },
-          series: [{
-            values: [0,0,0,0,0,0,0,0]
-          }]
+          nearest: null,
+          'scale-x': { format: "Day %v" },
+          series: [{values: [0,0,0,0,0,0,0,0]}]
         }
       }
       this.handleChange = this.handleChange.bind(this);
@@ -54,6 +50,19 @@ class Chart extends React.Component {
                 display: (this.props.display)
             })
         }
+        if(this.state.area !== this.props.area){
+          this.setState({
+              area: (this.props.area),
+              levelDistancing: '',
+              config: {
+                type: 'line',
+                nearest: null,
+                'scale-x': { format: "Day %v" },
+                series: [{values: [0,0,0,0,0,0,0,0]}]
+              }
+            }
+          )
+      }
     }
 
 
@@ -73,14 +82,15 @@ class Chart extends React.Component {
             return (
                 <div id='output-container'>
                     <form>
-                        <label>
+                      <label>
                         <b>Level of Social Distancing:&nbsp;</b>
                         <select name="levelDistancing" value={this.state.levelDistancing} onChange={this.handleChange}>
-                        <option value=""></option>
-                        <option value="low">Low</option>
-                        <option value="medium">Moderate</option>
-                        <option value="high">High</option>
-                    </select>
+                          <option value=""></option>
+                          <option value="low">Low</option>
+                          <option value="medium">Moderate</option>
+                          <option value="high">High</option>
+                          <option value="compare">Compare</option>
+                      </select>
                     </label>
                   </form>
                   {n}

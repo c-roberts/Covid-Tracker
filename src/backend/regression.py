@@ -161,7 +161,7 @@ class CovidRegression:
 
         return pol_reg.predict(poly_reg.fit_transform(x))
 
-        
+'''  
 population = 200000
 density = 500
 
@@ -177,5 +177,5 @@ x_medium = model.values['medium']['x']
 y_medium = model.values['medium']['y']
 x_high = model.values['high']['x']
 y_high = model.values['high']['y']
-
+'''
 

@@ -6,6 +6,8 @@ from sklearn.preprocessing import PolynomialFeatures
 from sklearn.preprocessing import scale
 from sklearn.linear_model import LinearRegression
 
+from pprint import pprint
+
 # set working directory to be current
 import os
 dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -21,17 +23,23 @@ class CovidRegression:
         self.mobility = None
         self.k = 10
 
+    def sanitize(self):
+        for i in range(0, len(self.data), 1):
+            d = self.data[i]
+            self.data[i] = (d[0], d[1].replace(" ", "_"), d[2].replace(" ", "_"))
+
     def process_cases_over_time(self):
         data_dict = {}
 
         for d in self.data:
             if 'county' in self.query:
                 name = d[1] + '-' + d[2]
+
             # elif 'state' in self.query:
             #     name = d[1]
             else:
                 raise Exception("invalid query")
-
+            name = name.replace(" ", "_")
             if name in data_dict:
                 start = data_dict[name]['start_date']
                 end = d[0]
@@ -86,13 +94,13 @@ class CovidRegression:
     def process_plot_values(self, num, x, y):
         sd_lvls = ['low', 'medium', 'high']
 
-        t = 'Number of Cases Over Time - {} Social Distancing'
-        t = t.format(sd_lvls[num - 1].capitalize())
+        #t = 'Number of Cases Over Time - {} Social Distancing'
+        #t = t.format(sd_lvls[num - 1].capitalize())
 
         self.values[sd_lvls[num - 1]]['x'] = x
         self.values[sd_lvls[num - 1]]['y'] = y
 
-        plt.title(t)
+        #plt.title(t)
 
     def create_plot(self, lvl, plt_num):
         days = np.array(self.cases[lvl]['days'])
@@ -104,21 +112,18 @@ class CovidRegression:
         pol_reg = LinearRegression()
         pol_reg.fit(x_poly, y)
 
-        #plot = plt.figure(plt_num)
-        #plt.scatter(x, y, color='red')
-        #plt.plot(x, pol_reg.predict(poly_reg.fit_transform(x)), color='blue')
+        plot = plt.figure(plt_num)
+        plt.scatter(x, y, color='red')
+        plt.plot(x, pol_reg.predict(poly_reg.fit_transform(x)), color='blue')
 
         self.process_plot_values(plt_num, days, y)
 
-        #plt.xlabel('Time (days)')
-        #plt.ylabel('Number of Cases')
+        plt.xlabel('Time (days)')
+        plt.ylabel('Number of Cases')
 
-        #try:
-        #    print("\nThe spread of COVID-19 in your region will be similar to that of", lvl.replace("-", ", "))
-        #except:
-        #    print("\nThe spread of COVID-19 in your region will be similar to that of", lvl)
+        print("\nThe spread of COVID-19 in your region will be similar to that of", lvl)
 
-        #print("Regression function coefficients for figure", plt_num)
+        print("Regression function coefficients for figure", plt_num)
         return pol_reg.coef_
 
     def visualize(self):
@@ -131,37 +136,41 @@ class CovidRegression:
         self.create_plot(med, 2)
         self.create_plot(high, 3)
 
-        #plt.show()
+        plt.show()
 
     def get_values(self, level):
         # counties representing each lvl of social distancing
-
         if level == 'low':
-            low = model.mobility[-1][0]
-            lvl = "low"
-        elif level == 'moderate':
-            med = model.mobility[int(model.k/2)-1][0]
-            lvl = "medium"
+            kn = self.mobility[-1][0]
+            n = 1
+        elif level == 'medium':
+            kn = self.mobility[int(self.k/2)-1][0]
+            n = 2
         elif level == 'high':
-            high = model.mobility[0][0]
-        else:
-            level = "high"
-            high = model.mobility[0][0]
-            lvl = "high"
+            kn = self.mobility[0][0]
+            n = 3
 
+        kn = kn.replace(" ", "_")
+        if kn == 'New_York-New_York':
+            kn = 'New_York-New_York_City'
 
-        days = np.array(self.cases[lvl]['days'])
+        days = np.array(self.cases[kn]['days'])
         x = days.reshape(-1, 1)
-        y = np.array(self.cases[lvl]['cases'])
+        y = np.array(self.cases[kn]['cases'])
 
         poly_reg = PolynomialFeatures(degree=3)
         x_poly = poly_reg.fit_transform(x)
         pol_reg = LinearRegression()
         pol_reg.fit(x_poly, y)
 
-        return pol_reg.predict(poly_reg.fit_transform(x))
+        self.process_plot_values(n, days, y)
 
-'''  
+        return
+
+'''
+model = CovidRegression()
+model.process_cases_over_time()
+
 population = 200000
 density = 500
 

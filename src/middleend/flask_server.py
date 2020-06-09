@@ -3,6 +3,7 @@ from us_counties import us
 from flask import Flask, request, send_from_directory, abort
 import os
 import threading
+from time import sleep
 import numpy as np 
 
 # start this server from the root '\Covid-Tracker' directory
@@ -27,6 +28,8 @@ userArea = -1
 userDensity = -1
 
 model = regression.CovidRegression()
+model.process_cases_over_time()
+model.sanitize()
 
 ## census utilities ##
 def get_population(state, county):
@@ -48,8 +51,8 @@ def set_area(state, county):
     global userArea
     userArea = get_area(state, county)
 
-    nt = threading.Thread(target=run_regression)
-    nt.start()
+    #nt = threading.Thread(target=run_regression)
+    #nt.start()
 
     return
 
@@ -99,19 +102,22 @@ def getUserData(state, county):
 
 @app.route('/fetch/<string:level>', methods=['GET'])
 def sendJSON(level):
-    global userLevel, userPopulation, userDensity, model
-
+    global userLevel, userPopulation, userDensity
     userDensity = get_density()
-    model.process_cases_over_time()
     model.process_mobility_scores(userPopulation, userDensity)
+    sleep(0.05)
+    
+    print("Pop: {}".format(userPopulation))
+    print("Density: {}".format(userDensity))
 
-    #print(model.values)
-    #print(model.mobility)
-
+    model.get_values("low")
+    model.get_values("medium")
+    model.get_values("high")
+    
     nearest = None
 
     if level != 'compare' and level != '' and userPopulation != -1:
-
+        #model.get_values(level)
         try:
             if level == 'low':
                 nearest = model.mobility[-1][0]
@@ -138,9 +144,13 @@ def sendJSON(level):
                 'values': "0:{}".format(get_max_y(model)),
                 'format': "%v"},
 
-            'series': [{'values': infection_data.tolist()}]
-            }
+            'series': [{'values': infection_data.tolist()}]}
+
     elif level == 'compare' and userPopulation != -1:
+        #model.get_values("low")
+        #model.get_values("medium")
+        #model.get_values("high")
+        
         infection_data_x_l = model.values['low']['x']
         infection_data_y_l = model.values['low']['y']
         infection_data_l = np.concatenate((infection_data_x_l.reshape((infection_data_x_l.size,1)), infection_data_y_l.reshape((infection_data_y_l.size,1))), axis=1)
@@ -152,7 +162,6 @@ def sendJSON(level):
         infection_data_x_h = model.values['high']['x']
         infection_data_y_h = model.values['high']['y']
         infection_data_h = np.concatenate((infection_data_x_h.reshape((infection_data_x_h.size,1)), infection_data_y_h.reshape((infection_data_y_h.size,1))), axis=1)
-
 
         o = {
         'type': 'area',
